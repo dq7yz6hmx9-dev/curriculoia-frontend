@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-Adiciona exemplos, carta de apresentacao e campos de escolaridade<title>CurriculoIA — Curriculo profissional em segundos</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -238,119 +237,100 @@ footer a:hover{color:var(--text)}
 </footer>
 
 <script>
-const API='https://curriculoia-backend-production.up.railway.app';
-let cvData=null, cartaData=null, abaAtual='curriculo';
+var API = 'https://curriculoia-backend-production.up.railway.app';
+var cvData = null;
+var cartaData = null;
+var abaAtual = 'curriculo';
 
-function trocarAba(aba){
-  abaAtual=aba;
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(aba==='curriculo'?0:1)));
-  const cartaSec=document.getElementById('carta-section');
-  const cartaFields=document.getElementById('carta-fields');
-  if(aba==='carta'){
-    cartaSec.style.display='block';
-    cartaFields.style.display='block';
-    document.getElementById('price-label').textContent='Curriculo + Carta em PDF';
-    document.getElementById('price-val').textContent='R$14,99';
-    document.getElementById('genBtn').textContent='Gerar curriculo + carta →';
+function trocarAba(aba) {
+  abaAtual = aba;
+  document.getElementById('tab-cv').classList.toggle('active', aba === 'curriculo');
+  document.getElementById('tab-carta').classList.toggle('active', aba === 'carta');
+  document.getElementById('carta-section').style.display = aba === 'carta' ? 'block' : 'none';
+  if (aba === 'carta') {
+    document.getElementById('price-label').textContent = 'Curriculo + Carta em PDF';
+    document.getElementById('price-val').textContent = 'R$14,99';
+    document.getElementById('genBtn').textContent = 'Gerar curriculo + carta';
   } else {
-    cartaSec.style.display='none';
-    cartaFields.style.display='none';
-    document.getElementById('price-label').textContent='Curriculo em PDF';
-    document.getElementById('price-val').textContent='R$9,99';
-    document.getElementById('genBtn').textContent='Gerar curriculo gratis →';
+    document.getElementById('price-label').textContent = 'Curriculo em PDF';
+    document.getElementById('price-val').textContent = 'R$9,99';
+    document.getElementById('genBtn').textContent = 'Gerar curriculo gratis';
   }
 }
 
-function preencherExemplo(){
-  document.getElementById('nome').value='Maria Souza';
-  document.getElementById('cargo').value='Atendente de Loja';
-  document.getElementById('email').value='maria.souza@gmail.com';
-  document.getElementById('tel').value='(11) 98765-4321';
-  document.getElementById('cidade').value='Sao Paulo, SP';
-  document.getElementById('escolaridade').value='Ensino Medio completo';
-  document.getElementById('objetivo').value='Busco minha primeira oportunidade no comercio para aprender e crescer profissionalmente.';
-  document.getElementById('exp').value='Ajudei na loja de roupas da minha tia nos fins de semana por 1 ano: atendimento ao cliente, organizacao do estoque e caixa.';
-  document.getElementById('formacao').value='Ensino Medio - Escola Estadual Sao Paulo (2023)
-Curso de Atendimento ao Cliente - SENAC online (2024)';
-  document.getElementById('skills').value='Atendimento ao cliente, caixa, organizacao, pontualidade, trabalho em equipe, pacote Office basico';
-  document.getElementById('empresa').value='Lojas Renner';
-  document.getElementById('motivacao').value='Admiro muito o atendimento da Renner e quero fazer parte de uma equipe tao reconhecida.';
+function preencherExemplo() {
+  document.getElementById('nome').value = 'Maria Souza';
+  document.getElementById('cargo').value = 'Atendente de Loja';
+  document.getElementById('email').value = 'maria.souza@gmail.com';
+  document.getElementById('tel').value = '(11) 98765-4321';
+  document.getElementById('cidade').value = 'Sao Paulo, SP';
+  document.getElementById('escolaridade').value = 'Ensino Medio completo';
+  document.getElementById('objetivo').value = 'Busco minha primeira oportunidade no comercio para aprender e crescer profissionalmente.';
+  document.getElementById('exp').value = 'Ajudei na loja de roupas da minha tia nos fins de semana por 1 ano: atendimento ao cliente, organizacao do estoque e operacao de caixa.';
+  document.getElementById('formacao').value = 'Ensino Medio - Escola Estadual Sao Paulo (2023)\nCurso de Atendimento ao Cliente - SENAC online (2024)';
+  document.getElementById('skills').value = 'Atendimento ao cliente, caixa, organizacao, pontualidade, trabalho em equipe, Pacote Office basico';
+  document.getElementById('empresa').value = 'Lojas Renner';
+  document.getElementById('motivacao').value = 'Admiro muito o atendimento da Renner e quero fazer parte de uma equipe tao reconhecida.';
 }
 
-async function gerarPreview(){
-  const nome=document.getElementById('nome').value.trim();
-  const cargo=document.getElementById('cargo').value.trim();
-  if(!nome||!cargo){alert('Preencha pelo menos nome e cargo desejado.');return;}
-  const btn=document.getElementById('genBtn');
-  btn.disabled=true;btn.textContent='Gerando...';
-  document.getElementById('resultCard').innerHTML='<div class="loading"><div class="spinner"></div><p>Claude esta escrevendo seu curriculo...<br><small style="opacity:.5">Isso leva alguns segundos</small></p></div>';
-
-  const dados={
-    nome, cargo,
-    email:document.getElementById('email').value.trim(),
-    tel:document.getElementById('tel').value.trim(),
-    cidade:document.getElementById('cidade').value.trim(),
-    escolaridade:document.getElementById('escolaridade').value,
-    objetivo:document.getElementById('objetivo').value.trim(),
-    exp:document.getElementById('exp').value.trim(),
-    formacao:document.getElementById('formacao').value.trim(),
-    skills:document.getElementById('skills').value.trim()
-  };
-
-  try{
-    const r=await fetch(API+'/api/gerar-curriculo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)});
-    const d=await r.json();
+function gerarPreview() {
+  var nome = document.getElementById('nome').value.trim();
+  var cargo = document.getElementById('cargo').value.trim();
+  if (!nome || !cargo) { alert('Preencha pelo menos nome e cargo.'); return; }
+  var btn = document.getElementById('genBtn');
+  btn.disabled = true; btn.textContent = 'Gerando...';
+  document.getElementById('resultCard').innerHTML = '<div class="loading"><div class="spinner"></div><p>Claude esta escrevendo seu curriculo...</p></div>';
+  var dados = { nome:nome, cargo:cargo, email:document.getElementById('email').value.trim(), tel:document.getElementById('tel').value.trim(), cidade:document.getElementById('cidade').value.trim(), escolaridade:document.getElementById('escolaridade').value, objetivo:document.getElementById('objetivo').value.trim(), exp:document.getElementById('exp').value.trim(), formacao:document.getElementById('formacao').value.trim(), skills:document.getElementById('skills').value.trim() };
+  fetch(API+'/api/gerar-curriculo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)})
+  .then(function(r){return r.json();})
+  .then(function(d){
     if(!d.ok)throw new Error(d.error);
     cvData=d.curriculo;
-
     if(abaAtual==='carta'){
-      const r2=await fetch(API+'/api/gerar-carta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...dados,empresa:document.getElementById('empresa').value.trim(),motivacao:document.getElementById('motivacao').value.trim()})});
-      const d2=await r2.json();
-      if(d2.ok)cartaData=d2.carta;
-    }
-    renderResult();
-  }catch(e){
-    document.getElementById('resultCard').innerHTML='<div class="error-box">Erro ao gerar. Tente novamente.<br><small>'+e.message+'</small></div>';
-  }
-  btn.disabled=false;
-  btn.textContent=abaAtual==='carta'?'Gerar novamente':'Gerar novamente';
+      var dc=Object.assign({},dados,{empresa:document.getElementById('empresa').value.trim(),motivacao:document.getElementById('motivacao').value.trim()});
+      return fetch(API+'/api/gerar-carta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dc)}).then(function(r2){return r2.json();}).then(function(d2){if(d2.ok)cartaData=d2.carta;renderResult();});
+    } else { renderResult(); }
+  })
+  .catch(function(e){document.getElementById('resultCard').innerHTML='<div class="error-box">Erro: '+e.message+'</div>';})
+  .finally(function(){btn.disabled=false;btn.textContent='Gerar novamente';});
 }
 
 function renderResult(){
-  const tabs=abaAtual==='carta'?'<div class="cv-tabs"><button class="cv-tab active" onclick="showCvTab(0,this)">Curriculo</button><button class="cv-tab" onclick="showCvTab(1,this)">Carta</button></div>':'' ;
-  document.getElementById('resultCard').innerHTML='<div class="cv-wrap"><p class="cv-hint">Previa do seu documento</p>'+tabs+'<div id="cv-panel">'+renderCV(cvData)+'</div>'+(abaAtual==='carta'?'<div id="carta-panel" style="display:none">'+renderCarta(cartaData)+'</div>':'')+'<div class="pay-box"><p><strong>Gostou?</strong><br>Pague para baixar o PDF completo.</p><button class="btn" onclick="baixarPDF()">Baixar PDF &darr;</button><button class="btn btn-outline" style="margin-top:.5rem" onclick="gerarPreview()">Regerar</button></div></div>';
+  var tabs=abaAtual==='carta'?'<div class="cv-tabs"><button class="cv-tab active" onclick="showCvTab(0,this)">Curriculo</button><button class="cv-tab" onclick="showCvTab(1,this)">Carta</button></div>':'';
+  var cp=abaAtual==='carta'?'<div id="carta-panel" style="display:none">'+renderCarta(cartaData)+'</div>':'';
+  document.getElementById('resultCard').innerHTML='<div class="cv-wrap"><p class="cv-hint">Previa do seu documento</p>'+tabs+'<div id="cv-panel">'+renderCV(cvData)+'</div>'+cp+'<div class="pay-box"><p><strong>Gostou?</strong><br>Pague para baixar o PDF.</p><button class="btn" onclick="baixarPDF()">Baixar PDF</button><button class="btn btn-outline" style="margin-top:.5rem" onclick="gerarPreview()">Regerar</button></div></div>';
 }
 
 function showCvTab(idx,el){
-  document.querySelectorAll('.cv-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.cv-tab').forEach(function(t){t.classList.remove('active');});
   el.classList.add('active');
   document.getElementById('cv-panel').style.display=idx===0?'block':'none';
-  const cp=document.getElementById('carta-panel');
+  var cp=document.getElementById('carta-panel');
   if(cp)cp.style.display=idx===1?'block':'none';
 }
 
 function renderCV(cv){
   if(!cv)return '';
-  const c=[cv.contatos?.email,cv.contatos?.telefone,cv.contatos?.cidade].filter(Boolean);
-  const ex=(cv.experiencias||[]).map(e=>'<div class="cv-exp"><div class="cv-exp-h"><span class="cv-exp-t">'+e.cargo+'</span><span class="cv-exp-p">'+e.periodo+'</span></div><div class="cv-exp-co">'+e.empresa+'</div><ul>'+(e.descricao||[]).map(b=>'<li>'+b+'</li>').join('')+'</ul></div>').join('');
-  const fo=(cv.formacao||[]).map(f=>'<div class="cv-exp"><div class="cv-exp-h"><span class="cv-exp-t">'+f.curso+'</span><span class="cv-exp-p">'+f.periodo+'</span></div><div class="cv-exp-co">'+f.instituicao+'</div></div>').join('');
-  const sk=[...(cv.habilidades||[]),...(cv.idiomas||[])];
-  return '<div class="cv-doc" id="cvDoc"><div class="cv-hdr"><div class="cv-name">'+cv.nome+'</div><div class="cv-role">'+cv.cargo+'</div><div class="cv-contacts">'+c.map(x=>'<span>'+x+'</span>').join('')+'</div></div>'+(cv.objetivo?'<div class="cv-sec"><div class="cv-sec-t">Objetivo</div><p>'+cv.objetivo+'</p></div>':'')+(ex?'<div class="cv-sec"><div class="cv-sec-t">Experiencia</div>'+ex+'</div>':'')+(fo?'<div class="cv-sec"><div class="cv-sec-t">Formacao</div>'+fo+'</div>':'')+(sk.length?'<div class="cv-sec"><div class="cv-sec-t">Habilidades</div><ul>'+sk.map(s=>'<li>'+s+'</li>').join('')+'</ul></div>':'')+'</div>';
+  var c=[cv.contatos&&cv.contatos.email,cv.contatos&&cv.contatos.telefone,cv.contatos&&cv.contatos.cidade].filter(Boolean);
+  var ex=(cv.experiencias||[]).map(function(e){return '<div class="cv-exp"><div class="cv-exp-h"><span class="cv-exp-t">'+e.cargo+'</span><span class="cv-exp-p">'+e.periodo+'</span></div><div class="cv-exp-co">'+e.empresa+'</div><ul>'+(e.descricao||[]).map(function(b){return '<li>'+b+'</li>';}).join('')+'</ul></div>';}).join('');
+  var fo=(cv.formacao||[]).map(function(f){return '<div class="cv-exp"><div class="cv-exp-h"><span class="cv-exp-t">'+f.curso+'</span><span class="cv-exp-p">'+f.periodo+'</span></div><div class="cv-exp-co">'+f.instituicao+'</div></div>';}).join('');
+  var sk=(cv.habilidades||[]).concat(cv.idiomas||[]);
+  return '<div class="cv-doc" id="cvDoc"><div class="cv-hdr"><div class="cv-name">'+cv.nome+'</div><div class="cv-role">'+cv.cargo+'</div><div class="cv-contacts">'+c.map(function(x){return '<span>'+x+'</span>';}).join('')+'</div></div>'+(cv.objetivo?'<div class="cv-sec"><div class="cv-sec-t">Objetivo</div><p>'+cv.objetivo+'</p></div>':'')+(ex?'<div class="cv-sec"><div class="cv-sec-t">Experiencia</div>'+ex+'</div>':'')+(fo?'<div class="cv-sec"><div class="cv-sec-t">Formacao</div>'+fo+'</div>':'')+(sk.length?'<div class="cv-sec"><div class="cv-sec-t">Habilidades</div><ul>'+sk.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul></div>':'')+'</div>';
 }
 
 function renderCarta(carta){
   if(!carta)return '<div class="carta-doc"><p>Carta nao gerada.</p></div>';
-  return '<div class="carta-doc" id="cartaDoc">'+carta.split('
-').filter(l=>l.trim()).map(l=>'<p>'+l+'</p>').join('')+'</div>';
+  return '<div class="carta-doc" id="cartaDoc">'+carta.split('\n').filter(function(l){return l.trim();}).map(function(l){return '<p>'+l+'</p>';}).join('')+'</div>';
 }
 
 function baixarPDF(){
   if(!cvData)return;
-  const cvConteudo=document.getElementById('cvDoc')?.innerHTML||'';
-  const cartaConteudo=cartaData&&document.getElementById('cartaDoc')?document.getElementById('cartaDoc').innerHTML:'';
-  const j=window.open('','_blank');
-  j.document.write('<html><head><title>Curriculo - '+cvData.nome+'</title><link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,sans-serif;padding:2.5rem;max-width:750px;margin:0 auto;font-size:13px;line-height:1.65;color:#111}.cv-hdr{border-bottom:2px solid #7c6af7;padding-bottom:.9rem;margin-bottom:1.1rem}.cv-name{font-family:Fraunces,serif;font-size:1.5rem;font-weight:600}.cv-role{color:#7c6af7;font-weight:500;margin-top:.15rem;font-size:.85rem}.cv-contacts{display:flex;flex-wrap:wrap;gap:.3rem 1rem;margin-top:.5rem;font-size:.75rem;color:#6b7280}.cv-sec{margin-bottom:1rem}.cv-sec-t{font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:#7c6af7;font-weight:600;margin-bottom:.45rem;padding-bottom:.25rem;border-bottom:1px solid #e5e7eb}.cv-exp{margin-bottom:.75rem}.cv-exp-h{display:flex;justify-content:space-between;align-items:baseline}.cv-exp-t{font-weight:600}.cv-exp-p{font-size:.72rem;color:#9ca3af}.cv-exp-co{font-size:.78rem;color:#6b7280;margin-bottom:.25rem}ul{padding-left:1.2rem}li{margin-bottom:.2rem;color:#374151}.page-break{page-break-before:always;padding-top:2rem}.carta-doc p{margin-bottom:.8rem;line-height:1.8}</style></head><body>'+cvConteudo+(cartaConteudo?'<div class="page-break">'+cartaConteudo+'</div>':'')+'</body></html>');
-  j.document.close();setTimeout(()=>j.print(),500);
+  var cv=document.getElementById('cvDoc')?document.getElementById('cvDoc').innerHTML:'';
+  var ca=cartaData&&document.getElementById('cartaDoc')?document.getElementById('cartaDoc').innerHTML:'';
+  var j=window.open('','_blank');
+  j.document.write('<!DOCTYPE html><html><head><title>Curriculo</title><style>body{font-family:sans-serif;padding:2rem;max-width:750px;margin:0 auto;font-size:13px;line-height:1.65;color:#111}.cv-hdr{border-bottom:2px solid #7c6af7;padding-bottom:.9rem;margin-bottom:1rem}.cv-name{font-size:1.4rem;font-weight:700}.cv-role{color:#7c6af7;font-size:.85rem}.cv-contacts{display:flex;flex-wrap:wrap;gap:.3rem 1rem;margin-top:.5rem;font-size:.75rem;color:#6b7280}.cv-sec{margin-bottom:1rem}.cv-sec-t{font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:#7c6af7;font-weight:600;margin-bottom:.4rem;padding-bottom:.25rem;border-bottom:1px solid #e5e7eb}.cv-exp{margin-bottom:.75rem}.cv-exp-h{display:flex;justify-content:space-between}.cv-exp-t{font-weight:600}.cv-exp-p{font-size:.72rem;color:#9ca3af}.cv-exp-co{font-size:.78rem;color:#6b7280;margin-bottom:.25rem}ul{padding-left:1.2rem}li{margin-bottom:.2rem}.carta-doc{padding-top:2rem}.carta-doc p{margin-bottom:.8rem;line-height:1.8}</style></head><body>'+cv+(ca?'<div class="carta-doc">'+ca+'</div>':'')+'</body></html>');
+  j.document.close();
+  setTimeout(function(){j.print();},500);
 }
 </script>
 </body>
